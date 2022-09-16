@@ -1,113 +1,99 @@
-# _ChRIS_ Plugin Template
+# GraphicsMagick plugin for _ChRIS_
 
-This is a minimal template repository for _ChRIS_ plugin applications in Python.
-
-## About _ChRIS_ Plugins
-
-A _ChRIS_ plugin is a scientific data-processing software which can run anywhere all-the-same:
-in the cloud via a [web app](https://github.com/FNNDSC/ChRIS_ui/), or on your own laptop
-from the terminal. They are easy to build and easy to understand: most simply, a
-_ChRIS_ plugin is a command-line program which processes data from an input directory
-and creates data to an output directory with the usage
-`commandname [options...] inputdir/ outputdir/`.
-
-For more information, visit our website https://chrisproject.org
-
-## How to Use This Template
-
-Go to https://github.com/FNNDSC/python-chrisapp-template and click "Use this template".
-The newly created repository is ready to use right away.
-
-A script `bootstrap.sh` is provided to help fill in and rename values for your new project.
-It is optional to use.
-
-1. Edit the variables in `bootstrap.sh`
-2. Run `./bootstrap.sh`
-3. Follow the instructions it will print out
-
-## Example Plugins
-
-Here are some good, complete examples of _ChRIS_ plugins created from this template.
-
-- https://github.com/FNNDSC/pl-dcm2niix (basic command example)
-- https://github.com/FNNDSC/pl-mri-preview (uses [NiBabel](https://nipy.org/nibabel/))
-- https://github.com/FNNDSC/pl-fetal-cp-surface-extract (example using Python package project structure)
-
-## What's Inside
-
-| Path                       | Purpose                                                                                                                                                                                                  |
-|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `app.py`                   | Main script: start editing here!                                                                                                                                                                         |
-| `tests/`                   | Unit tests                                                                                                                                                                                               |
-| `setup.py`                 | [Python project metadata and installation script](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#setup-py)                                                        |
-| `requirements.txt`         | List of Python dependencies                                                                                                                                                                              |
-| `Dockerfile`               | [Container image build recipe](https://docs.docker.com/engine/reference/builder/)                                                                                                                        |
-| `.github/workflows/ci.yml` | "continuous integration" using [Github Actions](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions): automatic testing, building, and uploads to https://chrisstore.co |
-
-
-<!-- BEGIN README TEMPLATE
-
-# ChRIS Plugin Title
-
-[![Version](https://img.shields.io/docker/v/fnndsc/pl-appname?sort=semver)](https://hub.docker.com/r/fnndsc/pl-appname)
-[![MIT License](https://img.shields.io/github/license/fnndsc/pl-appname)](https://github.com/FNNDSC/pl-appname/blob/main/LICENSE)
-[![ci](https://github.com/FNNDSC/pl-appname/actions/workflows/ci.yml/badge.svg)](https://github.com/FNNDSC/pl-appname/actions/workflows/ci.yml)
-
-`pl-appname` is a [_ChRIS_](https://chrisproject.org/)
-_ds_ plugin which takes in ...  as input files and
-creates ... as output files.
+<!-- [![Version](https://img.shields.io/docker/v/fnndsc/pl-appname?sort=semver)](https://hub.docker.com/r/fnndsc/pl-appname) -->
+[![MIT License](https://img.shields.io/github/license/rh-impact/pl-graphicsmagick)](https://github.com/rh-impact/graphicsmagick/blob/main/LICENSE)
+[![ci](https://github.com/rh-impact/pl-graphicsmagick/actions/workflows/ci.yml/badge.svg)](https://github.com/rh-impact/pl-graphicsmagick/actions/workflows/ci.yml)
 
 ## Abstract
 
-...
+`pl-graphicsmagick` is a [_ChRIS_](https://chrisproject.org/)
+_ds_ plugin which takes in images as input files and
+creates images processed by [GraphicsMagick](http://www.graphicsmagick.org)
+as output files.
+
+To get an idea of what GraphicsMagick is capable of, look at the list
+of [GraphicsMagick
+utilities](http://www.graphicsmagick.org/utilities.html).
+
+Especially the [convert
+utility](http://www.graphicsmagick.org/convert.html) is popular and
+can do various operations on images: resize, blur, sharpen, crop,
+dither, flip, rotate, adjust brightness-saturation-hue etc.
 
 ## Installation
 
-`pl-appname` is a _[ChRIS](https://chrisproject.org/) plugin_, meaning it can
+`pl-graphicsmagick` is a _[ChRIS](https://chrisproject.org/) plugin_, meaning it can
 run from either within _ChRIS_ or the command-line.
 
-[![Get it from chrisstore.co](https://ipfs.babymri.org/ipfs/QmaQM9dUAYFjLVn3PpNTrpbKVavvSTxNLE5BocRCW1UoXG/light.png)](https://chrisstore.co/plugin/pl-appname)
+[![Get it from chrisstore.co](https://ipfs.babymri.org/ipfs/QmaQM9dUAYFjLVn3PpNTrpbKVavvSTxNLE5BocRCW1UoXG/light.png)](https://chrisstore.co/plugin/pl-graphicsmagick)
 
-## Local Usage
+## Running locally
 
 To get started with local command-line usage, use [Apptainer](https://apptainer.org/)
-(a.k.a. Singularity) to run `pl-appname` as a container:
+(a.k.a. Singularity) to run `pl-graphicsmagick` as a container:
 
 ```shell
-singularity exec docker://fnndsc/pl-appname commandname [--args values...] input/ output/
+singularity exec docker://fnndsc/pl-graphicsmagick chris-gm -c "args..." input/ output/
 ```
 
 To print its available options, run:
 
 ```shell
-singularity exec docker://fnndsc/pl-appname commandname --help
+singularity exec docker://fnndsc/pl-graphicsmagick chris-gm --help
 ```
 
-## Examples
+## Plugin parameters
 
-`commandname` requires two positional arguments: a directory containing
-input data, and a directory where to create output data.
-First, create the input directory and move input data into it.
+`chris-gm` requires a `-c <COMMAND_ARGS>` (or `--command-args
+<COMMAND_ARGS>`) argument and two positional arguments. The
+`--command-args` is a string with all the arguments that you would
+pass to GraphicsMagick if you were to execute `gm` command directly.
+The positional arguments are a directory containing input data, and a
+directory where to create output data.
+
+The value of the `--command-args` argument can contain variables
+`%INDIR%` and `%OUTDIR%` which get substituted for the input and
+output directories, respectively. The variable substitution is not too
+useful when using `chris-gm` on the command line, but it is useful
+when executing the plugin from ChRIS, so that you can easily reference
+the input/output directories from the GraphicsMagick command.
+
+Example:
 
 ```shell
 mkdir incoming/ outgoing/
-mv some.dat other.dat incoming/
-singularity exec docker://fnndsc/pl-appname:latest commandname [--args] incoming/ outgoing/
+mv some.jpg other.jpg incoming/
+
+# without variable substitution
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert incoming/some.jpg -blur 3 outgoing/some.jpg" incoming/ outgoing/
+
+# with variable substitution
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" incoming/ outgoing/
 ```
 
 ## Development
 
-Instructions for developers.
+To set up virtualenv for development:
+
+```
+make virtualenv-requirements
+```
+
+To run unit tests (requires GraphicsMagick installed locally):
+
+```
+make test
+```
 
 ### Building
 
 Build a local container image:
 
 ```shell
-docker build -t localhost/fnndsc/pl-appname .
+docker build -t localhost/pl-graphicsmagick .
 ```
 
-### Running
+### Running from locally built image
 
 Mount the source code `app.py` into a container to try out changes without rebuild.
 
@@ -115,7 +101,7 @@ Mount the source code `app.py` into a container to try out changes without rebui
 docker run --rm -it --userns=host -u $(id -u):$(id -g) \
     -v $PWD/app.py:/usr/local/lib/python3.10/site-packages/app.py:ro \
     -v $PWD/in:/incoming:ro -v $PWD/out:/outgoing:rw -w /outgoing \
-    localhost/fnndsc/pl-appname commandname /incoming /outgoing
+    localhost/fnndsc/pl-graphicsmagick chris-gm --help
 ```
 
 ### Testing
@@ -125,8 +111,15 @@ It's recommended to rebuild the image to ensure that sources are up-to-date.
 Use the option `--build-arg extras_require=dev` to install extra dependencies for testing.
 
 ```shell
-docker build -t localhost/fnndsc/pl-appname:dev --build-arg extras_require=dev .
-docker run --rm -it localhost/fnndsc/pl-appname:dev pytest
+docker build -t localhost/fnndsc/pl-graphicsmagick:dev --build-arg extras_require=dev .
+docker run --rm -it localhost/fnndsc/pl-graphicsmagick:dev pytest
+```
+
+Alternatively use the aforementioned:
+
+```shell
+make virtualenv-requirements
+make test
 ```
 
 ## Release
@@ -143,8 +136,8 @@ Increase the version number in `setup.py` and commit this file.
 Build and push an image tagged by the version. For example, for version `1.2.3`:
 
 ```
-docker build -t docker.io/fnndsc/pl-appname:1.2.3 .
-docker push docker.io/fnndsc/pl-appname:1.2.3
+docker build -t docker.io/fnndsc/pl-graphicsmagick:1.2.3 .
+docker push docker.io/fnndsc/pl-graphicsmagick:1.2.3
 ```
 
 ### Get JSON Representation
@@ -153,7 +146,5 @@ Run [`chris_plugin_info`](https://github.com/FNNDSC/chris_plugin#usage)
 to produce a JSON description of this plugin, which can be uploaded to a _ChRIS Store_.
 
 ```shell
-docker run --rm localhost/fnndsc/pl-appname:dev chris_plugin_info > chris_plugin_info.json
+docker run --rm localhost/fnndsc/pl-graphicsmagick:dev chris_plugin_info > chris_plugin_info.json
 ```
-
-END README TEMPLATE -->
