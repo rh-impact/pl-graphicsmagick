@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app import replace_vars_for_values, split_args
+from app import replace_vars_for_values, run_graphicsmagick, split_args
 
 
 def test_command_args_split():
@@ -22,3 +22,9 @@ def test_command_replace_vars():
         },
     )
     assert replaced == 'convert /inputdir/input.jpg -resize 100x100 /outputdir/output.jpg'
+
+def test_run_graphicsmagick():
+    """
+    Test running of GraphicMagick command.
+    """
+    run_graphicsmagick(['version'])

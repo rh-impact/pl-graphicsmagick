@@ -54,5 +54,10 @@ def split_args(args_str):
     args_singlespace = re.sub(' +', ' ', args_str)
     return args_singlespace.split(' ')
 
+def run_graphicsmagick(args):
+    cmd = ['/usr/bin/gm']
+    cmd.extend(args)
+    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 if __name__ == '__main__':
     main()
