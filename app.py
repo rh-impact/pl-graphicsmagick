@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from importlib.metadata import Distribution
+from pathlib import Path
+import re
 import subprocess
 
 from chris_plugin import chris_plugin
@@ -31,7 +32,6 @@ parser.add_argument('-c', '--command-args',
                     required=True,
                     help="arguments to be passed to the 'gm' command")
 
-
 # documentation: https://fnndsc.github.io/chris_plugin/chris_plugin.html#chris_plugin
 @chris_plugin(
     parser=parser,
@@ -43,6 +43,10 @@ parser.add_argument('-c', '--command-args',
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
+
+def split_args(args_str):
+    args_singlespace = re.sub(' +', ' ', args_str)
+    return args_singlespace.split(' ')
 
 if __name__ == '__main__':
     main()
