@@ -13,7 +13,7 @@ __version__ = __pkg.version
 
 
 DISPLAY_TITLE = r"""
-GraphicMagick ChRIS plugin
+GraphicsMagick ChRIS plugin
 """
 
 
