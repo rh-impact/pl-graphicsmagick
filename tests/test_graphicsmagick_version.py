@@ -3,7 +3,7 @@ from pathlib import Path
 from app import parser, main, DISPLAY_TITLE
 
 
-def test_main(tmp_path: Path):
+def test_graphicsmagick_version(tmp_path: Path):
     """
     Simulated test run of the app.
     """
