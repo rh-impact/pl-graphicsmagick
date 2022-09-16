@@ -3,9 +3,9 @@
 # FROM docker.io/fnndsc/conda:python3.10.2-cuda11.6.0
 FROM docker.io/python:3.10.6-slim-bullseye
 
-LABEL org.opencontainers.image.authors="FNNDSC <dev@babyMRI.org>" \
-      org.opencontainers.image.title="ChRIS Plugin Title" \
-      org.opencontainers.image.description="A ChRIS plugin that..."
+LABEL org.opencontainers.image.authors="Jiri Stransky <jistr@redhat.com> and FNNDSC <dev@babyMRI.org>" \
+      org.opencontainers.image.title="GraphicsMagick ChRIS plugin" \
+      org.opencontainers.image.description="ChRIS plugin that allows running arbitrary GraphicsMagick processing on images"
 
 WORKDIR /usr/local/src/app
 
