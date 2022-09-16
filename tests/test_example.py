@@ -3,7 +3,7 @@ from pathlib import Path
 from app import parser, main, DISPLAY_TITLE
 
 
-def test_main(mocker, tmp_path: Path):
+def test_main(tmp_path: Path):
     """
     Simulated test run of the app.
     """
@@ -14,9 +14,7 @@ def test_main(mocker, tmp_path: Path):
 
     options = parser.parse_args(['--name', 'bar'])
 
-    mock_print = mocker.patch('builtins.print')
     main(options, inputdir, outputdir)
-    mock_print.assert_called_once_with(DISPLAY_TITLE)
 
     expected_output_file = outputdir / 'bar.txt'
     assert expected_output_file.exists()
