@@ -7,7 +7,7 @@ import subprocess
 
 INFILE = 'tests/data/tea_estate.jpg'
 
-def test_main(tmp_path: Path):
+def test_failure(tmp_path: Path):
     """
     Simulated test run of the app.
     """
