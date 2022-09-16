@@ -44,6 +44,12 @@ parser.add_argument('-c', '--command-args',
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
 
+def replace_vars_for_values(args_str, vars_values):
+    replaced = args_str
+    for var, value in vars_values.items():
+        replaced = replaced.replace(var, value)
+    return replaced
+
 def split_args(args_str):
     args_singlespace = re.sub(' +', ' ', args_str)
     return args_singlespace.split(' ')
