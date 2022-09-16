@@ -2,9 +2,9 @@ from setuptools import setup
 
 setup(
     name='chris-plugin-graphicsmagick',
-    version='1.0.0',
+    version='0.1.0',
     description='GraphicsMagick plugin for ChRIS medical imaging',
-    author='FNNDSC',
+    author='Jiri Stransky and FNNDSC',
     author_email='dev@babyMRI.org',
     url='https://github.com/rh-impact/pl-graphicsmagick',
     py_modules=['app'],
