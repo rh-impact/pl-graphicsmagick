@@ -9,6 +9,9 @@ LABEL org.opencontainers.image.authors="Jiri Stransky <jistr@redhat.com> and FNN
 
 WORKDIR /usr/local/src/app
 
+RUN apt-get -y update && apt-get -y upgrade
+RUN apt-get -y install graphicsmagick
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
