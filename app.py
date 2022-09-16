@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from importlib.metadata import Distribution
+from pathlib import Path
+import re
 import subprocess
 
 from chris_plugin import chris_plugin
@@ -28,9 +29,9 @@ parser.add_argument('-V', '--version', action='version',
 # as a single argument, and then split them by whitespace when passing
 # them to the 'gm' command.
 parser.add_argument('-c', '--command-args',
+                    type=str,
                     required=True,
                     help="arguments to be passed to the 'gm' command")
-
 
 # documentation: https://fnndsc.github.io/chris_plugin/chris_plugin.html#chris_plugin
 @chris_plugin(
@@ -43,6 +44,29 @@ parser.add_argument('-c', '--command-args',
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
+
+    raw_args = options.command_args
+    vars_values = {
+        '%INDIR%': str(inputdir),
+        '%OUTDIR%': str(outputdir),
+    }
+    processed_args = split_args(replace_vars_for_values(raw_args, vars_values))
+    run_graphicsmagick(processed_args)
+
+def replace_vars_for_values(args_str, vars_values):
+    replaced = args_str
+    for var, value in vars_values.items():
+        replaced = replaced.replace(var, value)
+    return replaced
+
+def split_args(args_str):
+    args_singlespace = re.sub(' +', ' ', args_str)
+    return args_singlespace.split(' ')
+
+def run_graphicsmagick(args):
+    cmd = ['/usr/bin/gm']
+    cmd.extend(args)
+    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 if __name__ == '__main__':
     main()
