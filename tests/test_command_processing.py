@@ -25,6 +25,6 @@ def test_command_replace_vars():
 
 def test_run_graphicsmagick():
     """
-    Test running of GraphicMagick command.
+    Test running of GraphicsMagick command.
     """
     run_graphicsmagick(['version'])
