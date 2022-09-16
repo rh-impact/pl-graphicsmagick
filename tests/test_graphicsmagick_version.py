@@ -12,10 +12,8 @@ def test_main(tmp_path: Path):
     inputdir.mkdir()
     outputdir.mkdir()
 
-    options = parser.parse_args(['--name', 'bar'])
+    options = parser.parse_args(['-c', 'version'])
 
     main(options, inputdir, outputdir)
 
-    expected_output_file = outputdir / 'bar.txt'
-    assert expected_output_file.exists()
-    assert expected_output_file.read_text() == 'did nothing successfully!'
+    # TODO: Test that this prints output of calling `gm version`.

@@ -3,6 +3,7 @@
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from importlib.metadata import Distribution
+import subprocess
 
 from chris_plugin import chris_plugin
 
@@ -11,33 +12,37 @@ __version__ = __pkg.version
 
 
 DISPLAY_TITLE = r"""
-ChRIS Plugin Template Title
+GraphicMagick ChRIS plugin
 """
 
 
 parser = ArgumentParser(description='cli description',
                         formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-n', '--name', default='foo',
-                    help='argument which sets example output file name')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
+
+# Originally i wanted simple pass-through args at the end of the
+# command line, but the @chris_plugin decorator automatically adds
+# inputdir and outputdir arguments at the end. So the way to make
+# pass-through arguments work with ChRIS is probably to have them all
+# as a single argument, and then split them by whitespace when passing
+# them to the 'gm' command.
+parser.add_argument('-c', '--command-args',
+                    required=True,
+                    help="arguments to be passed to the 'gm' command")
 
 
 # documentation: https://fnndsc.github.io/chris_plugin/chris_plugin.html#chris_plugin
 @chris_plugin(
     parser=parser,
-    title='My ChRIS plugin',
-    category='',                 # ref. https://chrisstore.co/plugins
+    title='GraphicsMagick ChRIS plugin',
+    category='Image Processing', # ref. https://chrisstore.co/plugins
     min_memory_limit='100Mi',    # supported units: Mi, Gi
     min_cpu_limit='1000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
-
-    output_file = outputdir / f'{options.name}.txt'
-    output_file.write_text('did nothing successfully!')
-
 
 if __name__ == '__main__':
     main()

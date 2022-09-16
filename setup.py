@@ -1,18 +1,18 @@
 from setuptools import setup
 
 setup(
-    name='chris-plugin-template',
+    name='chris-plugin-graphicsmagick',
     version='1.0.0',
-    description='A ChRIS DS plugin template',
+    description='GraphicsMagick plugin for ChRIS medical imaging',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
-    url='https://github.com/FNNDSC/python-chrisapp-template',
+    url='https://github.com/rh-impact/pl-graphicsmagick',
     py_modules=['app'],
     install_requires=['chris_plugin'],
     license='MIT',
     entry_points={
         'console_scripts': [
-            'commandname = app:main'
+            'chris-gm = app:main'
         ]
     },
     classifiers=[
