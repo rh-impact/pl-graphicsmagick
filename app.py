@@ -29,6 +29,7 @@ parser.add_argument('-V', '--version', action='version',
 # as a single argument, and then split them by whitespace when passing
 # them to the 'gm' command.
 parser.add_argument('-c', '--command-args',
+                    type=str,
                     required=True,
                     help="arguments to be passed to the 'gm' command")
 
@@ -43,6 +44,14 @@ parser.add_argument('-c', '--command-args',
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
+
+    raw_args = options.command_args
+    vars_values = {
+        '%INDIR%': str(inputdir),
+        '%OUTDIR%': str(outputdir),
+    }
+    processed_args = split_args(replace_vars_for_values(raw_args, vars_values))
+    run_graphicsmagick(processed_args)
 
 def replace_vars_for_values(args_str, vars_values):
     replaced = args_str
