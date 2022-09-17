@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+from chris_plugin import chris_plugin
+
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from importlib.metadata import Distribution
+from os import listdir
+from os import path
 from pathlib import Path
 import re
 import subprocess
-
-from chris_plugin import chris_plugin
 
 __pkg = Distribution.from_name(__package__)
 __version__ = __pkg.version
@@ -28,10 +30,16 @@ parser.add_argument('-V', '--version', action='version',
 # pass-through arguments work with ChRIS is probably to have them all
 # as a single argument, and then split them by whitespace when passing
 # them to the 'gm' command.
-parser.add_argument('-c', '--command-args',
+parser.add_argument('-s', '--single',
                     type=str,
-                    required=True,
-                    help="arguments to be passed to the 'gm' command")
+                    default='',
+                    help=("Arguments to be passed to 'gm' command, single execution. "
+                          "Mutually exclusive with -b."))
+parser.add_argument('-b', '--batch',
+                    type=str,
+                    default='',
+                    help=("Arguments to be passed to 'gm' command, executed once per each file in input directory. "
+                          "Mutually exclusive with -s."))
 
 # documentation: https://fnndsc.github.io/chris_plugin/chris_plugin.html#chris_plugin
 @chris_plugin(
@@ -45,13 +53,39 @@ parser.add_argument('-c', '--command-args',
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     print(DISPLAY_TITLE)
 
-    raw_args = options.command_args
+    processed_args = process_command_args(options.single, options.batch, inputdir, outputdir)
+
+    if options.single:
+        run_graphicsmagick(split_args(processed_args))
+    else:  # options.batch is truthy
+        input_files = list_input_files(inputdir)
+        for input_file in input_files:
+            file_args = process_file_args(processed_args, input_file)
+            run_graphicsmagick(split_args(file_args))
+
+def list_input_files(inputdir):
+    return sorted([f for f in listdir(inputdir) if path.isfile(path.join(inputdir, f))])
+
+def process_command_args(single_args, batch_args, inputdir, outputdir):
+    if not single_args and not batch_args:
+        raise RuntimeError("Either --single or --batch argument must be specified.")
+    if single_args and batch_args:
+        raise RuntimeError("Arguments --single and --batch are mutually exclusive.")
+
     vars_values = {
         '%INDIR%': str(inputdir),
         '%OUTDIR%': str(outputdir),
     }
-    processed_args = split_args(replace_vars_for_values(raw_args, vars_values))
-    run_graphicsmagick(processed_args)
+    return replace_vars_for_values(single_args or batch_args, vars_values)
+
+def process_file_args(args, input_file):
+    base, ext = path.splitext(input_file)
+    vars_values = {
+        '%FILE%': input_file,
+        '%FILEBASE%': base,
+        '%FILEEXT%': ext,
+    }
+    return replace_vars_for_values(args, vars_values)
 
 def replace_vars_for_values(args_str, vars_values):
     replaced = args_str

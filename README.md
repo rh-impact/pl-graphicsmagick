@@ -20,6 +20,10 @@ utility](http://www.graphicsmagick.org/convert.html) is popular and
 can do various operations on images: resize, blur, sharpen, crop,
 dither, flip, rotate, adjust brightness-saturation-hue etc.
 
+GraphicsMagick can also convert between file formats simply by
+specifying an output file extension different from the input file
+extension.
+
 ## Installation
 
 `pl-graphicsmagick` is a _[ChRIS](https://chrisproject.org/) plugin_, meaning it can
@@ -42,33 +46,68 @@ To print its available options, run:
 singularity exec docker://fnndsc/pl-graphicsmagick chris-gm --help
 ```
 
-## Plugin parameters
+## How to use the plugin
 
-`chris-gm` requires a `-c <COMMAND_ARGS>` (or `--command-args
-<COMMAND_ARGS>`) argument and two positional arguments. The
-`--command-args` is a string with all the arguments that you would
-pass to GraphicsMagick if you were to execute `gm` command directly.
-The positional arguments are a directory containing input data, and a
-directory where to create output data.
+`chris-gm` can operate in:
 
-The value of the `--command-args` argument can contain variables
-`%INDIR%` and `%OUTDIR%` which get substituted for the input and
-output directories, respectively. The variable substitution is not too
-useful when using `chris-gm` on the command line, but it is useful
-when executing the plugin from ChRIS, so that you can easily reference
-the input/output directories from the GraphicsMagick command.
+* Single mode - a single GraphicsMagick call is made. Use `-s` or
+  `--single` argument to specify the GraphicsMagick command arguments.
 
-Example:
+* Batch mode - one GraphicsMagick call is made per each file in the
+  input directory. Use `-b` or `--batch` to specify the GraphicsMagick
+  command arguments.
+
+It is required to provide either `-s/--single` or `-b/--batch` but not
+both at the same time.
+
+Both single and batch command argument supports variable substitution.
+These variables work with both `--single` and `--batch`:
+
+* `%INDIR%` - resolves to the input directory.
+
+* `%OUTDIR%` - resolves to the output directory.
+
+Additionally, `--batch` supports variables for the file that
+`chris-gm` is currently operating on in the batch loop:
+
+* `%FILE%` - resolves to the file name being operated on. This does
+  not include the input directory, so the full path in the command is
+  usually specified as `%INDIR%/%FILE%`.
+
+* `%FILEBASE%` - resolves to the base file name (without extension).
+  This is useful when performing conversion to different image
+  formats. E.g. you can specify input path as `%INDIR%/%FILE%` and
+  output path as `%OUTDIR%/%FILEBASE%.png` to convert all input files
+  to PNG format.
+
+* `%FILEEXT%` - resolves to file extension (if any), including the
+  period that separates it from the base file name. `%FILE%` can be
+  alternatively written as `%FILEBASE%%FILEEXT%`.
+
+After the single/batch command argument, two positional arguments are
+required. The first is a directory containing input data, the second
+is a directory where to create output data.
+
+## Examples
 
 ```shell
 mkdir incoming/ outgoing/
 mv some.jpg other.jpg incoming/
 
-# without variable substitution
+# Single mode without variable substitution
 singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert incoming/some.jpg -blur 3 outgoing/some.jpg" incoming/ outgoing/
 
-# with variable substitution
+# Single mode with variable substitution
 singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" incoming/ outgoing/
+
+# Batch mode - will resize all images to 100x100 pixels.
+# The names of the files in the output dir will be the same as in the input dir.
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/%FILE% -resize 100x100 %OUTDIR%/%FILE%" incoming/ outgoing/
+
+# Batch mode - will convert all images to PNG.
+# The base names of the files in output the dir will be the same as
+# in the input dir, but the extension is different.
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/%FILE% %OUTDIR%/%FILEBASE%.png" incoming/ outgoing/
 ```
 
 ## Development

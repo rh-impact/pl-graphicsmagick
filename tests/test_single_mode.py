@@ -6,7 +6,7 @@ import shutil
 
 INFILE = 'tests/data/tea_estate.jpg'
 
-def test_image_operation(tmp_path: Path):
+def test_single_image_operation(tmp_path: Path):
     """
     Simulated test run of the app.
     """
@@ -17,7 +17,7 @@ def test_image_operation(tmp_path: Path):
 
     shutil.copyfile(INFILE, inputdir.joinpath('infile.jpg'))
 
-    options = parser.parse_args(['-c', 'convert %INDIR%/infile.jpg -blur 3 -bordercolor black -border 5 %OUTDIR%/outfile.jpg'])
+    options = parser.parse_args(['-s', 'convert %INDIR%/infile.jpg -blur 3 -bordercolor black -border 5 %OUTDIR%/outfile.jpg'])
     main(options, inputdir, outputdir)
 
     assert path.exists(outputdir.joinpath('outfile.jpg'))
