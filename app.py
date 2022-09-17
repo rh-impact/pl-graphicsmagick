@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+from chris_plugin import chris_plugin
+
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 from importlib.metadata import Distribution
+from os import listdir
+from os import path
 from pathlib import Path
 import re
 import subprocess
-
-from chris_plugin import chris_plugin
 
 __pkg = Distribution.from_name(__package__)
 __version__ = __pkg.version
@@ -54,9 +56,15 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     processed_args = process_command_args(options.single, options.batch, inputdir, outputdir)
 
     if options.single:
-        run_graphicsmagick(processed_args)
-    else:  # options.batch are truthy
-        raise NotImplementedError("Batch mode is not implemented.")
+        run_graphicsmagick(split_args(processed_args))
+    else:  # options.batch is truthy
+        input_files = list_input_files(inputdir)
+        for input_file in input_files:
+            file_args = process_file_args(processed_args, input_file)
+            run_graphicsmagick(split_args(file_args))
+
+def list_input_files(inputdir):
+    return sorted([f for f in listdir(inputdir) if path.isfile(path.join(inputdir, f))])
 
 def process_command_args(single_args, batch_args, inputdir, outputdir):
     if not single_args and not batch_args:
@@ -68,7 +76,16 @@ def process_command_args(single_args, batch_args, inputdir, outputdir):
         '%INDIR%': str(inputdir),
         '%OUTDIR%': str(outputdir),
     }
-    return split_args(replace_vars_for_values(single_args or batch_args, vars_values))
+    return replace_vars_for_values(single_args or batch_args, vars_values)
+
+def process_file_args(args, input_file):
+    base, ext = path.splitext(input_file)
+    vars_values = {
+        '%FILE%': input_file,
+        '%FILEBASE%': base,
+        '%FILEEXT%': ext,
+    }
+    return replace_vars_for_values(args, vars_values)
 
 def replace_vars_for_values(args_str, vars_values):
     replaced = args_str

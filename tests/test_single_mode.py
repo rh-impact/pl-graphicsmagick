@@ -6,7 +6,7 @@ import shutil
 
 INFILE = 'tests/data/tea_estate.jpg'
 
-def test_image_operation(tmp_path: Path):
+def test_single_image_operation(tmp_path: Path):
     """
     Simulated test run of the app.
     """
