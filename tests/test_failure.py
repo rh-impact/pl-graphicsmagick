@@ -25,3 +25,29 @@ def test_malformed_command(tmp_path: Path):
         assert false, "GraphicsMagick should have failed but it didn't."
     except subprocess.CalledProcessError:
         pass
+
+def test_no_single_nor_batch_specified(tmp_path: Path):
+    inputdir = tmp_path / 'incoming'
+    outputdir = tmp_path / 'outgoing'
+    inputdir.mkdir()
+    outputdir.mkdir()
+
+    options = parser.parse_args([])
+    try:
+        main(options, inputdir, outputdir)
+        assert false, "chris-gm should have failed but it didn't."
+    except RuntimeError:
+        pass
+
+def test_both_single_and_batch_specified(tmp_path: Path):
+    inputdir = tmp_path / 'incoming'
+    outputdir = tmp_path / 'outgoing'
+    inputdir.mkdir()
+    outputdir.mkdir()
+
+    options = parser.parse_args(['-s', 'asdf', '-b', 'ghkl'])
+    try:
+        main(options, inputdir, outputdir)
+        assert false, "chris-gm should have failed but it didn't."
+    except RuntimeError:
+        pass
