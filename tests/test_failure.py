@@ -7,7 +7,7 @@ import subprocess
 
 INFILE = 'tests/data/tea_estate.jpg'
 
-def test_failure(tmp_path: Path):
+def test_malformed_command(tmp_path: Path):
     """
     Simulated test run of the app.
     """
@@ -19,7 +19,7 @@ def test_failure(tmp_path: Path):
     shutil.copyfile(INFILE, inputdir.joinpath('infile.jpg'))
 
     # fakecolor is not a color, GraphicsMagick should fail
-    options = parser.parse_args(['-c', 'convert %INDIR%/infile.jpg -bordercolor boguscolor -border 5 %OUTDIR%/outfile.jpg'])
+    options = parser.parse_args(['-s', 'convert %INDIR%/infile.jpg -bordercolor boguscolor -border 5 %OUTDIR%/outfile.jpg'])
     try:
         main(options, inputdir, outputdir)
         assert false, "GraphicsMagick should have failed but it didn't."

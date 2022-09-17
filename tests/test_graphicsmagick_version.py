@@ -12,7 +12,7 @@ def test_graphicsmagick_version(tmp_path: Path):
     inputdir.mkdir()
     outputdir.mkdir()
 
-    options = parser.parse_args(['-c', 'version'])
+    options = parser.parse_args(['-s', 'version'])
 
     main(options, inputdir, outputdir)
 

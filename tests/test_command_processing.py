@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app import replace_vars_for_values, run_graphicsmagick, split_args
+from app import process_command_args, replace_vars_for_values, run_graphicsmagick, split_args
 
 
 def test_command_args_split():
@@ -28,3 +28,15 @@ def test_run_graphicsmagick():
     Test running of GraphicsMagick command.
     """
     run_graphicsmagick(['version'])
+
+def test_process_command_args_single():
+    """
+    Test processing of single/batch command args.
+    """
+    processed = process_command_args(
+        'convert %INDIR%/input.jpg -resize 100x100 %OUTDIR%/output.jpg',
+        None,
+        '/inputdir',
+        '/outputdir',
+    )
+    assert processed == ['convert', '/inputdir/input.jpg', '-resize', '100x100', '/outputdir/output.jpg']

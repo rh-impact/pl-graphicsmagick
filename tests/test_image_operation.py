@@ -17,7 +17,7 @@ def test_image_operation(tmp_path: Path):
 
     shutil.copyfile(INFILE, inputdir.joinpath('infile.jpg'))
 
-    options = parser.parse_args(['-c', 'convert %INDIR%/infile.jpg -blur 3 -bordercolor black -border 5 %OUTDIR%/outfile.jpg'])
+    options = parser.parse_args(['-s', 'convert %INDIR%/infile.jpg -blur 3 -bordercolor black -border 5 %OUTDIR%/outfile.jpg'])
     main(options, inputdir, outputdir)
 
     assert path.exists(outputdir.joinpath('outfile.jpg'))
