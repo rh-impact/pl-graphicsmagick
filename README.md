@@ -37,7 +37,7 @@ To get started with local command-line usage, use [Apptainer](https://apptainer.
 (a.k.a. Singularity) to run `pl-graphicsmagick` as a container:
 
 ```shell
-singularity exec docker://fnndsc/pl-graphicsmagick chris-gm -c "args..." input/ output/
+singularity exec docker://fnndsc/pl-graphicsmagick chris-gm --single "args..." input/ output/
 ```
 
 To print its available options, run:
@@ -95,19 +95,19 @@ mkdir incoming/ outgoing/
 mv some.jpg other.jpg incoming/
 
 # Single mode without variable substitution
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert incoming/some.jpg -blur 3 outgoing/some.jpg" incoming/ outgoing/
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --single "convert incoming/some.jpg -blur 3 outgoing/some.jpg" incoming/ outgoing/
 
 # Single mode with variable substitution
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" incoming/ outgoing/
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --single "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" incoming/ outgoing/
 
 # Batch mode - will resize all images to 100x100 pixels.
 # The names of the files in the output dir will be the same as in the input dir.
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/%FILE% -resize 100x100 %OUTDIR%/%FILE%" incoming/ outgoing/
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --batch "convert %INDIR%/%FILE% -resize 100x100 %OUTDIR%/%FILE%" incoming/ outgoing/
 
 # Batch mode - will convert all images to PNG.
 # The base names of the files in output the dir will be the same as
 # in the input dir, but the extension is different.
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm -c "convert %INDIR%/%FILE% %OUTDIR%/%FILEBASE%.png" incoming/ outgoing/
+singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --batch "convert %INDIR%/%FILE% %OUTDIR%/%FILEBASE%.png" incoming/ outgoing/
 ```
 
 ## Development
