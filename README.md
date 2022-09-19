@@ -33,17 +33,20 @@ run from either within _ChRIS_ or the command-line.
 
 ## Running locally
 
-To get started with local command-line usage, use [Apptainer](https://apptainer.org/)
-(a.k.a. Singularity) to run `pl-graphicsmagick` as a container:
-
-```shell
-singularity exec docker://fnndsc/pl-graphicsmagick chris-gm --single "args..." input/ output/
-```
-
 To print its available options, run:
 
 ```shell
-singularity exec docker://fnndsc/pl-graphicsmagick chris-gm --help
+docker run --rm quay.io/rh-impact/pl-graphicsmagick chris-gm --help
+```
+
+To run with custom input/output dirs mounted, run something like:
+
+```shell
+docker run --rm \
+    -v /my/input-dir-on-host:/input \
+    -v /my/output-dir-on-host:/output \
+    quay.io/rh-impact/pl-graphicsmagick \
+    chris-gm --single "args..." /input /output
 ```
 
 ## How to use the plugin
@@ -95,19 +98,23 @@ mkdir incoming/ outgoing/
 mv some.jpg other.jpg incoming/
 
 # Single mode without variable substitution
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --single "convert incoming/some.jpg -blur 3 outgoing/some.jpg" incoming/ outgoing/
+docker run --rm -v incoming:/incoming -v outgoing:/outgoing quay.io/rh-impact/pl-graphicsmagick \
+    chris-gm --single "convert incoming/some.jpg -blur 3 outgoing/some.jpg" /incoming /outgoing
 
 # Single mode with variable substitution
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --single "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" incoming/ outgoing/
+docker run --rm -v incoming:/incoming -v outgoing:/outgoing quay.io/rh-impact/pl-graphicsmagick \
+    chris-gm --single "convert %INDIR%/other.jpg -resize 100x100 %OUTDIR%/other.jpg" /incoming /outgoing
 
 # Batch mode - will resize all images to 100x100 pixels.
 # The names of the files in the output dir will be the same as in the input dir.
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --batch "convert %INDIR%/%FILE% -resize 100x100 %OUTDIR%/%FILE%" incoming/ outgoing/
+docker run --rm -v incoming:/incoming -v outgoing:/outgoing quay.io/rh-impact/pl-graphicsmagick \
+    chris-gm --batch "convert %INDIR%/%FILE% -resize 100x100 %OUTDIR%/%FILE%" incoming/ outgoing/
 
 # Batch mode - will convert all images to PNG.
 # The base names of the files in output the dir will be the same as
 # in the input dir, but the extension is different.
-singularity exec docker://fnndsc/pl-graphicsmagick:latest chris-gm --batch "convert %INDIR%/%FILE% %OUTDIR%/%FILEBASE%.png" incoming/ outgoing/
+docker run --rm -v incoming:/incoming -v outgoing:/outgoing quay.io/rh-impact/pl-graphicsmagick \
+    chris-gm --batch "convert %INDIR%/%FILE% %OUTDIR%/%FILEBASE%.png" incoming/ outgoing/
 ```
 
 ## Development
@@ -129,36 +136,10 @@ make test
 Build a local container image:
 
 ```shell
-docker build -t localhost/pl-graphicsmagick .
-```
+# If you're using docker and not podman, export this first:
+# export CONTAINER_MGR=docker
 
-### Running from locally built image
-
-Mount the source code `app.py` into a container to try out changes without rebuild.
-
-```shell
-docker run --rm -it --userns=host -u $(id -u):$(id -g) \
-    -v $PWD/app.py:/usr/local/lib/python3.10/site-packages/app.py:ro \
-    -v $PWD/in:/incoming:ro -v $PWD/out:/outgoing:rw -w /outgoing \
-    localhost/fnndsc/pl-graphicsmagick chris-gm --help
-```
-
-### Testing
-
-Run unit tests using `pytest`.
-It's recommended to rebuild the image to ensure that sources are up-to-date.
-Use the option `--build-arg extras_require=dev` to install extra dependencies for testing.
-
-```shell
-docker build -t localhost/fnndsc/pl-graphicsmagick:dev --build-arg extras_require=dev .
-docker run --rm -it localhost/fnndsc/pl-graphicsmagick:dev pytest
-```
-
-Alternatively use the aforementioned:
-
-```shell
-make virtualenv-requirements
-make test
+make build-container
 ```
 
 ## Release
@@ -175,8 +156,8 @@ Increase the version number in `setup.py` and commit this file.
 Build and push an image tagged by the version. For example, for version `1.2.3`:
 
 ```
-docker build -t docker.io/fnndsc/pl-graphicsmagick:1.2.3 .
-docker push docker.io/fnndsc/pl-graphicsmagick:1.2.3
+docker build -t quay.io/rh-impact/pl-graphicsmagick:1.2.3 .
+docker push quay.io/rh-impact/pl-graphicsmagick:1.2.3
 ```
 
 ### Get JSON Representation
@@ -185,5 +166,5 @@ Run [`chris_plugin_info`](https://github.com/FNNDSC/chris_plugin#usage)
 to produce a JSON description of this plugin, which can be uploaded to a _ChRIS Store_.
 
 ```shell
-docker run --rm localhost/fnndsc/pl-graphicsmagick:dev chris_plugin_info > chris_plugin_info.json
+docker run --rm localhost/pl-graphicsmagick chris_plugin_info > chris_plugin_info.json
 ```
