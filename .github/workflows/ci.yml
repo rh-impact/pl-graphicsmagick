@@ -45,7 +45,7 @@ jobs:
           docker run -v "$GITHUB_WORKSPACE:/app:ro" -w /app localhost/local/app:dev \
             pytest -o cache_dir=/tmp/pytest
 
-  build:
+  push_image:
     name: Push container image
     needs: [ test ]  # tests must pass before build
     if: github.event_name == 'push' || github.event_name == 'release'
@@ -98,12 +98,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      # - name: Login to DockerHub
-      #   id: dockerhub_login
-      #   uses: docker/login-action@v2
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Login to Quay
+        id: quay_login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
 
       # - name: Login to GitHub Container Registry
       #   uses: docker/login-action@v2
@@ -120,6 +120,7 @@ jobs:
           file: ./Dockerfile
           tags: |
             localhost:5000/${{ steps.determine.outputs.dock_image }}
+            quay.io/${{ steps.determine.outputs.dock_image }}
           # ghcr.io/${{ steps.determine.outputs.dock_image }}
           # docker.io/${{ steps.determine.outputs.dock_image }}
           # if non-x86_84 architectures are supported, add them here
