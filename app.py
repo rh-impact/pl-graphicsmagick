@@ -100,7 +100,18 @@ def split_args(args_str):
 def run_graphicsmagick(args):
     cmd = ['/usr/bin/gm']
     cmd.extend(args)
-    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        finished = subprocess.run(cmd, check=True, capture_output=True)
+        print("STDOUT:")
+        print(finished.stdout.decode())
+        print("STDERR:")
+        print(finished.stderr.decode())
+    except subprocess.CalledProcessError as e:
+        print("STDOUT:")
+        print(e.stdout.decode())
+        print("STDERR:")
+        print(e.stderr.decode())
+        raise
 
 if __name__ == '__main__':
     main()
