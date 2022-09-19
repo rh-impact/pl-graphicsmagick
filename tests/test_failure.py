@@ -22,7 +22,7 @@ def test_malformed_command(tmp_path: Path):
     options = parser.parse_args(['-s', 'convert %INDIR%/infile.jpg -bordercolor boguscolor -border 5 %OUTDIR%/outfile.jpg'])
     try:
         main(options, inputdir, outputdir)
-        assert false, "GraphicsMagick should have failed but it didn't."
+        assert False, "GraphicsMagick should have failed but it didn't."
     except subprocess.CalledProcessError:
         pass
 
@@ -35,7 +35,7 @@ def test_no_single_nor_batch_specified(tmp_path: Path):
     options = parser.parse_args([])
     try:
         main(options, inputdir, outputdir)
-        assert false, "chris-gm should have failed but it didn't."
+        assert False, "chris-gm should have failed but it didn't."
     except RuntimeError:
         pass
 
@@ -48,6 +48,6 @@ def test_both_single_and_batch_specified(tmp_path: Path):
     options = parser.parse_args(['-s', 'asdf', '-b', 'ghkl'])
     try:
         main(options, inputdir, outputdir)
-        assert false, "chris-gm should have failed but it didn't."
+        assert False, "chris-gm should have failed but it didn't."
     except RuntimeError:
         pass
